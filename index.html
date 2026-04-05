@@ -23,9 +23,9 @@ html{scroll-behavior:smooth;font-size:16px;}
 body{font-family:'Outfit',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;cursor:none;}
 
 /* CURSOR */
-#cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;will-change:left,top;opacity:0;}
-#curR{width:32px;height:32px;border:1.5px solid rgba(200,168,75,.45);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .11s ease,top .11s ease;will-change:left,top;opacity:0;}
-body:has(a:hover) #cur,body:has(button:hover) #cur{width:18px;height:18px;background:var(--gold-light);}
+#cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
+#curR{width:32px;height:32px;border:1.5px solid rgba(200,168,75,.45);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
+body:has(a:hover) #cur,body:has(button:hover) #cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
 
 /* NAV */
 nav{position:fixed;top:0;width:100%;z-index:1000;padding:18px 64px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,12,26,.82);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
@@ -343,7 +343,7 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
         <div class="metric-l">Gov. Sector</div>
       </div>
       <div class="metric">
-        <div class="metric-n" data-count="20">0</div>
+        <div class="metric-n" data-count="25">0</div>
         <div class="metric-l">Certifications</div>
       </div>
     </div>
@@ -403,7 +403,7 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
       <div class="exp-bar-wrap"><div class="exp-bar" style="--bar-pct:60%"></div></div>
     </div>
     <div class="exp-stat">
-      <div class="exp-stat-n" data-count-exp="5">0</div>
+      <div class="exp-stat-n" data-count-exp="7">0</div>
       <div class="exp-stat-l">Countries</div>
       <div class="exp-bar-wrap"><div class="exp-bar" style="--bar-pct:50%"></div></div>
     </div>
@@ -558,7 +558,7 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
   <div class="cert-section-header">
     <h2 class="sec-title" style="margin-bottom:0">Certifications</h2>
     <div class="cert-count-badge">
-      <strong data-count-cert="20">0</strong>&nbsp;Active Certifications &amp; Credentials
+      <strong data-count-cert="25">0</strong>&nbsp;Active Certifications &amp; Credentials
     </div>
   </div>
   <div class="cgrid">
@@ -788,7 +788,7 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
         var step = Math.ceil(target/40);
         var iv = setInterval(function(){
           cur = Math.min(cur+step, target);
-          el.textContent = cur + (target>=50?'+':'');
+          el.textContent = cur + (target>=15?'+':'');
           if(cur>=target) clearInterval(iv);
         }, 30);
       });
@@ -821,20 +821,15 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
 
 </script><script>
 (function(){
-  // Cursor — smooth tracking + show on first move
-  var c=document.getElementById('cur'),r=document.getElementById('curR');
-  var mx=0,my=0,rafId=null;
-  function moveCursorRing(){ r.style.left=mx+'px'; r.style.top=my+'px'; }
-  document.addEventListener('mousemove',function(e){
-    mx=e.clientX; my=e.clientY;
-    c.style.left=mx+'px'; c.style.top=my+'px';
-    if(c.style.opacity==='0'||c.style.opacity===''){
-      c.style.opacity='1'; r.style.opacity='1';
-    }
-    if(!rafId){ rafId=requestAnimationFrame(function(){ moveCursorRing(); rafId=null; }); }
+  // Cursor — snaps to mouse immediately, ring follows with smooth lag
+  var c=document.getElementById('cur'), r=document.getElementById('curR');
+  document.addEventListener('mousemove', function(e){
+    c.style.left = e.clientX + 'px';
+    c.style.top  = e.clientY + 'px';
+    r.style.left = e.clientX + 'px';
+    r.style.top  = e.clientY + 'px';
   });
-  document.addEventListener('mouseleave',function(){ c.style.opacity='0'; r.style.opacity='0'; });
-  document.addEventListener('mouseenter',function(){ c.style.opacity='1'; r.style.opacity='1'; });
+
 
   // Nav
   var nav=document.getElementById('nav');
@@ -889,9 +884,25 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
   },{threshold:.08,rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.titem,.scard,.ccard,.ecard,.aitem').forEach(function(el){io.observe(el);});
 
-  // ── Hero metric counters (Years Exp. 0→15+ and Certifications 0→10+) ──
+  // ── Hero metric counters: 0→15+ (Years) and 0→25+ (Certifications) ──
   function animateCounter(el, target, suffix) {
-    var cur = 0, duration = 1800, steps = 60;
+    var cur = 0, steps = 60, duration = 1800;
     var iv = setInterval(function(){
-      cur = Math.min(cur + target/steps, target);
-      el.textContent
+      cur = Math.min(cur + target / steps, target);
+      el.textContent = Math.floor(cur) + suffix;
+      if (cur >= target) { el.textContent = target + suffix; clearInterval(iv); }
+    }, duration / steps);
+  }
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      document.querySelectorAll('[data-count]').forEach(function(el){
+        var target = parseInt(el.getAttribute('data-count'));
+        animateCounter(el, target, '+');
+      });
+    }, 600);
+  });
+
+})();
+</script>
+</body>
+</html>
