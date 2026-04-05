@@ -23,9 +23,9 @@ html{scroll-behavior:smooth;font-size:16px;}
 body{font-family:'Outfit',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;cursor:none;}
 
 /* CURSOR */
-#cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
-#curR{width:32px;height:32px;border:1.5px solid rgba(200,168,75,.45);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
-body:has(a:hover) #cur,body:has(button:hover) #cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:-200px;left:-200px;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
+#cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;margin-left:-5px;margin-top:-5px;pointer-events:none;z-index:9999;transition:width .3s,height .3s,background .3s;display:none;}
+#curR{width:32px;height:32px;border:1.5px solid rgba(200,168,75,.45);border-radius:50%;position:fixed;top:0;left:0;margin-left:-16px;margin-top:-16px;pointer-events:none;z-index:9998;transition:left .1s ease,top .1s ease;display:none;}
+body:has(a:hover) #cur,body:has(button:hover) #cur{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;margin-left:-5px;margin-top:-5px;pointer-events:none;z-index:9999;transition:width .3s,height .3s,background .3s;display:none;}
 
 /* NAV */
 nav{position:fixed;top:0;width:100%;z-index:1000;padding:18px 64px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,12,26,.82);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
@@ -821,13 +821,24 @@ footer{padding:36px 64px;border-top:1px solid rgba(255,255,255,.05);display:flex
 
 </script><script>
 (function(){
-  // Cursor — snaps to mouse immediately, ring follows with smooth lag
-  var c=document.getElementById('cur'), r=document.getElementById('curR');
-  document.addEventListener('mousemove', function(e){
-    c.style.left = e.clientX + 'px';
-    c.style.top  = e.clientY + 'px';
-    r.style.left = e.clientX + 'px';
-    r.style.top  = e.clientY + 'px';
+  // Cursor — definitive fix
+  var cur = document.getElementById('cur');
+  var curR = document.getElementById('curR');
+  document.addEventListener('mousemove', function(e) {
+    cur.style.display = 'block';
+    curR.style.display = 'block';
+    cur.style.left  = e.clientX + 'px';
+    cur.style.top   = e.clientY + 'px';
+    curR.style.left = e.clientX + 'px';
+    curR.style.top  = e.clientY + 'px';
+  });
+  document.addEventListener('mouseleave', function() {
+    cur.style.display = 'none';
+    curR.style.display = 'none';
+  });
+  document.addEventListener('mouseenter', function() {
+    cur.style.display = 'block';
+    curR.style.display = 'block';
   });
 
 
